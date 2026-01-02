@@ -4,7 +4,7 @@ import { Check, X, Calendar, MapPin, Building, Shield, Users, Activity, Trending
 import { Button } from '../../components/ui/button';
 import { useAuth } from '../../context/AuthContext';
 
-import { useAuth } from '../../context/AuthContext';
+
 import { API_BASE_URL } from '../../config';
 
 export default function AdminDashboard() {
