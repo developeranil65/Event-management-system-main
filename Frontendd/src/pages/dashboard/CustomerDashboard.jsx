@@ -118,14 +118,24 @@ export default function CustomerDashboard() {
         pdf.text('EventOne Ticket', 15, 15);
 
         // Ticket image
-        const finalHeight = pdfHeight > 250 ? 250 : pdfHeight;
+       const maxHeight = 250;
 
+        let finalWidth = pdfWidth - 20;
+        let finalHeight = pdfHeight;
+        
+        if (pdfHeight > maxHeight) {
+            const scaleFactor = maxHeight / pdfHeight;
+        
+            finalHeight = maxHeight;
+            finalWidth = finalWidth * scaleFactor;
+        }
+        
         pdf.addImage(
             imgData,
             'PNG',
             10,
             25,
-            pdfWidth - 20,
+            finalWidth,
             finalHeight
         );
 
@@ -515,7 +525,8 @@ export default function CustomerDashboard() {
                                 <X className="w-5 h-5" />
                             </button>
 
-                            <div ref={ticketRef} className="p-6 bg-white">
+                            <div className="p-6 bg-white">
+                                <div ref={ticketRef}>
                                 <div className="text-center mb-6">
                                     <h3 className="text-xl font-bold mb-1 text-rose-600">
                                         EventOne Ticket
@@ -569,7 +580,7 @@ export default function CustomerDashboard() {
                                     )}
                                     <p className="text-[10px] text-zinc-500 mt-2 font-mono">SCAN AT ENTRANCE</p>
                                 </div>
-
+                                </div>
                                 <Button onClick={handleDownloadTicket} className="w-full bg-rose-600 hover:bg-rose-700 text-white">
                                     <Download className="w-4 h-4 mr-2" />
                                     Download / Print Ticket
