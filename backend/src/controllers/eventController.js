@@ -25,21 +25,26 @@ export const updateEvent = async (req, res) => {
       const result = await uploadOnCloudinary(req.file.path);
       if (result?.secure_url) {
         update.posterUrl = result.secure_url;
-
-        // Delete the old poster from Cloudinary
-        const oldEvent = await Event.findById(req.params.id).lean();
-        if (oldEvent?.posterUrl) {
-          await deleteFromCloudinary(oldEvent.posterUrl);
-        }
       }
     }
+
+    // Fetch the old event with the organizer constraint to capture the previous poster URL
+    const oldEvent = await Event.findOne(
+      { _id: req.params.id, organizer: req.user.id }
+    ).lean();
+    if (!oldEvent) return res.status(404).json({ message: 'Event not found' });
 
     const event = await Event.findOneAndUpdate(
       { _id: req.params.id, organizer: req.user.id },
       update,
       { new: true }
     );
-    if (!event) return res.status(404).json({ message: 'Event not found' });
+
+    // Delete the old poster from Cloudinary only after a successful authorized update
+    if (update.posterUrl && oldEvent.posterUrl) {
+      await deleteFromCloudinary(oldEvent.posterUrl);
+    }
+
     res.json({ event });
   } catch (err) {
     res.status(500).json({ message: err.message });
