@@ -17,8 +17,9 @@ export const registerForEvent = async (req, res) => {
     } catch (_) { }
     res.status(201).json({ registration: reg });
   } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
+  console.error('ERROR:', err);
+  res.status(500).json({ message: err.message });
+}
 };
 
 export const myRegistrations = async (req, res) => {
@@ -26,8 +27,9 @@ export const myRegistrations = async (req, res) => {
     const regs = await Registration.find({ user: req.user.id }).populate('event');
     res.json({ registrations: regs });
   } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
+  console.error('ERROR:', err);
+  res.status(500).json({ message: err.message });
+}
 };
 
 export const participantsForEvent = async (req, res) => {
@@ -35,8 +37,9 @@ export const participantsForEvent = async (req, res) => {
     const regs = await Registration.find({ event: req.params.id }).populate('user', 'name email');
     res.json({ participants: regs });
   } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
+  console.error('ERROR:', err);
+  res.status(500).json({ message: err.message });
+}
 };
 
 export const checkInParticipant = async (req, res) => {
@@ -50,8 +53,9 @@ export const checkInParticipant = async (req, res) => {
     if (!reg) return res.status(404).json({ message: 'Registration not found' });
     res.json({ registration: reg });
   } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
+  console.error('ERROR:', err);
+  res.status(500).json({ message: err.message });
+}
 };
 
 export const exportParticipantsCsv = async (req, res) => {
@@ -71,8 +75,9 @@ export const exportParticipantsCsv = async (req, res) => {
     await csvWriter.writeRecords(rows);
     res.download(filePath);
   } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
+  console.error('ERROR:', err);
+  res.status(500).json({ message: err.message });
+}
 };
 
 export const checkRegistrationStatus = async (req, res) => {
@@ -80,8 +85,9 @@ export const checkRegistrationStatus = async (req, res) => {
     const registration = await Registration.findOne({ user: req.user.id, event: req.params.id });
     res.json({ isRegistered: !!registration });
   } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
+  console.error('ERROR:', err);
+  res.status(500).json({ message: err.message });
+}
 };
 
 
