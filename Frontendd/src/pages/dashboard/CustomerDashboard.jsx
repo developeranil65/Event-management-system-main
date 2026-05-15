@@ -6,6 +6,8 @@ import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
 import { API_BASE_URL } from '../../config';
 import { generateCertificate } from '../../utils/generateCertificate';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 export default function CustomerDashboard() {
     const { user } = useAuth();
