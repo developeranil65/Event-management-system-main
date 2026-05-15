@@ -121,3 +121,19 @@ export const exportParticipantsCsv = async (req, res) => {
     });
   }
 };
+export const myRegistrations = async (req, res) => {
+  try {
+    const registrations = await Registration.find({
+      user: req.user.id
+    }).populate('event');
+
+    res.status(200).json({
+      registrations
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      message: err.message
+    });
+  }
+};
