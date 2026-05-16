@@ -7,8 +7,29 @@ import path from 'path';
 
 export const registerForEvent = async (req, res) => {
   try {
-    const event = await Event.findById(req.params.id);
-    if (!event || event.status !== 'approved') return res.status(400).json({ message: 'Event not available' });
+    const eventId = req.params.id;
+    const userId = req.user.id;
+    const alreadyRegistered = await Registration.findOne({ event: eventId, user: userId, status: { $ne: 'cancelled' } });
+    if (alreadyRegistered) return res.status(400).json({ message: 'You are already registered for this event.' });
+    const event = await Event.findOneAndUpdate(
+      {
+        _id: eventId,
+        status: 'approved',
+        $or: [
+          { capacity: 0 },
+          { $expr: { $lt: ['$registeredCount', '$capacity'] } }
+        ]
+      },
+      { $inc: { registeredCount: 1 } },
+      { new: true }
+    );
+    if (!event) {
+      const eventCheck = await Event.findById(eventId);
+      if (!eventCheck || eventCheck.status !== 'approved') {
+        return res.status(400).json({ message: 'Event not available' });
+      }
+      return res.status(400).json({ message: 'Event is fully booked' });
+    }
     const payload = JSON.stringify({ userId: req.user.id, eventId: event._id, at: Date.now() });
     const qrCodeDataUrl = await generateQRCodeDataUrl(payload);
     const reg = await Registration.create({ user: req.user.id, event: event._id, qrCodeDataUrl });
