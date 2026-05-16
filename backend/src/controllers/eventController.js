@@ -1,6 +1,8 @@
 import Event from '../models/Event.js';
 import Registration from '../models/Registration.js';
 import { uploadOnCloudinary, deleteFromCloudinary } from '../config/cloudinary.js';
+import { sendTicketEmail } from '../utils/email.js';
+import { generateQRCodeDataUrl } from '../utils/qrcode.js';
 
 export const createEvent = async (req, res) => {
   try {
@@ -69,21 +71,105 @@ export const deleteEvent = async (req, res) => {
 
 export const listEvents = async (req, res) => {
   try {
-    const { q, category, status, organizer } = req.query;
-    const filter = {};
-    if (q) filter.title = { $regex: q, $options: 'i' };
-    if (category) filter.category = category;
-    if (status) filter.status = status;
-    if (organizer) filter.organizer = organizer;
-    const events = await Event.find(filter).populate('organizer', 'name').sort({ date: 1 });
+    const { q, category, status, organizer, tags } = req.query;
+
+    const filter = {
+      status: 'approved',
+    };
+
+    // Search by title
+    if (q) {
+      filter.title = {
+        $regex: q,
+        $options: 'i',
+      };
+    }
+
+    // Filter by category
+    if (category) {
+      filter.category = category;
+    }
+
+    // Filter by status
+    if (status) {
+      filter.status = status;
+    }
+
+    // Filter by organizer
+    if (organizer) {
+      filter.organizer = organizer;
+    }
+
+    // Filter by tags (AND logic)
+    if (tags) {
+      const tagArray = tags
+        .split(',')
+        .map((tag) => tag.toLowerCase().trim())
+        .filter(Boolean);
+
+      filter.tags = {
+        $all: tagArray,
+      };
+    }
+
+    const events = await Event.find(filter)
+      .populate('organizer', 'name')
+      .sort({ date: 1 });
+
     res.json({ events });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({
+      message: err.message,
+    });
   }
 };
 
-import { sendTicketEmail } from '../utils/email.js';
-import { generateQRCodeDataUrl } from '../utils/qrcode.js';
+export const getPopularTags = async (req, res) => {
+  try {
+    const tags = await Event.aggregate([
+      {
+        $match: {
+          status: 'approved',
+        },
+      },
+
+      {
+        $unwind: '$tags',
+      },
+
+      {
+        $group: {
+          _id: '$tags',
+          count: { $sum: 1 },
+        },
+      },
+
+      {
+        $sort: {
+          count: -1,
+        },
+      },
+
+      {
+        $limit: 20,
+      },
+
+      {
+        $project: {
+          _id: 0,
+          tag: '$_id',
+          count: 1,
+        },
+      },
+    ]);
+
+    res.json({ tags });
+  } catch (err) {
+    res.status(500).json({
+      message: err.message,
+    });
+  }
+};
 
 export const getEvent = async (req, res) => {
   try {
