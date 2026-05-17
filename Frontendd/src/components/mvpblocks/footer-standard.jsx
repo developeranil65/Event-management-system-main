@@ -12,6 +12,7 @@ import {
   Zap,
   Heart,
 } from "lucide-react";
+import { Button } from "../ui/button";
 
 const data = () => ({
   navigation: {
@@ -163,7 +164,7 @@ export default function FooterStandard() {
 
               <div className="relative w-full">
 
-                <Input
+                <input
                   type="email"
                   id="email"
                   placeholder="Enter your email"
@@ -213,7 +214,7 @@ export default function FooterStandard() {
                 <ul className="space-y-2">
                   {data().navigation[section].map((item) => (
                     <li key={item.name}>
-                     <Link
+                      <Link
                         to={item.href}
                         onClick={(e) => {
                           if (section === 'legal') {
@@ -222,7 +223,7 @@ export default function FooterStandard() {
                         }}
                         className="text-xs text-slate-600 hover:text-rose-600 transition-colors cursor-pointer">
                         {item.name}
-                      </a>
+                      </Link>
                     </li>
                   ))}
                 </ul>
@@ -240,10 +241,7 @@ export default function FooterStandard() {
           <p>
             &copy; {currentYear} Eventone | All rights reserved
           </p>
-
-          <div className="flex items-center gap-4">
-
-            {data().bottomLinks.map(({ href, label }) => (
+        </div>
 
         {/* Divider */}
         <div className="h-px bg-slate-200 my-10"></div>
