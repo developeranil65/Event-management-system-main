@@ -15,6 +15,8 @@ import {
   validate,
 } from '../middleware/validationMiddleware.js';
 
+
+
 const router = Router();
 
 // Auth Routes

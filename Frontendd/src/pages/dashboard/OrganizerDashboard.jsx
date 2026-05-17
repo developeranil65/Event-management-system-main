@@ -20,6 +20,7 @@ export default function OrganizerDashboard() {
     const [creating, setCreating] = useState(false);
     const [activeTab, setActiveTab] = useState('My Events');
     const [selectedEvent, setSelectedEvent] = useState(null);
+    const [editingEventId, setEditingEventId] = useState(null);
 
     const [formData, setFormData] = useState({
         title: '',
@@ -410,6 +411,11 @@ const handleCreateSubmit = async (e) => {
                                                             <p className="text-muted-foreground text-sm mt-2 line-clamp-2 max-w-2xl">
                                                                 {event.description}
                                                             </p>
+                                                            {event.status === 'rejected' && event.rejectionReason && (
+                                                                <div className="mt-3 rounded-xl border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-600">
+                                                                    Reason: {event.rejectionReason}
+                                                                </div>
+                                                            )}
                                                             <div className="flex flex-wrap items-center gap-4 mt-3 text-xs text-muted-foreground">
                                                                 <span className="flex items-center">
                                                                     <Calendar className="w-3 h-3 mr-1.5" />
@@ -442,9 +448,32 @@ const handleCreateSubmit = async (e) => {
                                                                 </div>
                                                             )}
                                                         </div>
+                                                        {event.tags?.length > 0 && (
+                                                            <div className="flex flex-wrap gap-2 mt-3">
+                                                                {event.tags.map((tag) => (
+                                                                    <button
+                                                                        key={tag}
+                                                                        type="button"
+                                                                        onClick={() => navigate(`/?tags=${tag}`)}
+                                                                        className="text-xs bg-purple-500/10 text-purple-500 px-2 py-1 rounded-full hover:bg-purple-500/20 transition"
+                                                                    >
+                                                                        #{tag}
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                        )}
 
                                                         {/* Management Actions */}
                                                         <div className="flex justify-end mt-4 pt-4 border-t border-border/50">
+                                                            {event.status === 'rejected' && (
+                                                                <Button
+                                                                    size="sm"
+                                                                    className="mr-3 bg-red-600 text-white hover:bg-red-700"
+                                                                    onClick={() => handleEditResubmit(event)}
+                                                                >
+                                                                    Edit & Resubmit
+                                                                </Button>
+                                                            )}
                                                             <Button
                                                                 size="sm"
                                                                 variant="outline"
@@ -539,6 +568,20 @@ const handleCreateSubmit = async (e) => {
                                                                 </span>
                                                             </div>
                                                         </div>
+                                                        {event.tags?.length > 0 && (
+                                                            <div className="flex flex-wrap gap-2 mt-3">
+                                                                {event.tags.map((tag) => (
+                                                                    <button
+                                                                        key={tag}
+                                                                        type="button"
+                                                                        onClick={() => navigate(`/?tags=${tag}`)}
+                                                                        className="text-xs bg-purple-500/10 text-purple-500 px-2 py-1 rounded-full hover:bg-purple-500/20 transition"
+                                                                    >
+                                                                        #{tag}
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                        )}
 
                                                         {/* Past Actions */}
                                                         <div className="flex justify-end gap-3 mt-4 pt-4 border-t border-border/50">
@@ -573,6 +616,22 @@ const handleCreateSubmit = async (e) => {
                                 className="max-w-3xl mx-auto"
                             >
                                 <form onSubmit={handleCreateSubmit} className="space-y-8">
+                                    {editingEventId && (
+                                        <div className="flex items-center justify-between rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3">
+                                            <div>
+                                                <div className="text-sm font-semibold text-red-600">Editing rejected event</div>
+                                                <div className="text-xs text-red-500/80">Save changes to resubmit this event for admin review.</div>
+                                            </div>
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                className="border-red-500/30 text-red-600 hover:bg-red-500/10"
+                                                onClick={resetForm}
+                                            >
+                                                Cancel Edit
+                                            </Button>
+                                        </div>
+                                    )}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                         <div className="space-y-4">
                                             <div className="space-y-2">
@@ -719,7 +778,7 @@ const handleCreateSubmit = async (e) => {
                                             ) : (
                                                 <>
                                                     <Plus className="w-4 h-4 mr-2" />
-                                                    Publish Event
+                                                    {editingEventId ? 'Resubmit Event' : 'Publish Event'}
                                                 </>
                                             )}
                                         </Button>
