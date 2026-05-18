@@ -13,11 +13,23 @@ import reviewRoutes from './routes/reviewRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import statsRoutes from './routes/statsRoutes.js';
 import http from 'http';
-
 import app from './app.js';
+import helmet from 'helmet';
+import cors from 'cors';
+import morgan from 'morgan';
+import express from 'express';
+import cookieParser from 'cookie-parser';
+import compression from 'compression';
+import rateLimit from 'express-rate-limit';
 import { env } from './config/env.js';
 import { connectDB } from './config/db.js';
 import { initSocket } from './services/socket.js';
+import authRoutes from './routes/authRoutes.js';
+import eventRoutes from './routes/eventRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
+import reviewRoutes from './routes/reviewRoutes.js';
+import statsRoutes from './routes/statsRoutes.js';
+import registrationRoutes from './routes/registrationRoutes.js';  
 
 const server = http.createServer(app);
 

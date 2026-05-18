@@ -14,6 +14,7 @@ import {
   Zap,
   Heart,
 } from "lucide-react";
+import { Button } from "../ui/button";
 
 const data = () => ({
   navigation: {
@@ -165,7 +166,7 @@ export default function FooterStandard() {
 
               <div className="relative w-full">
 
-                <Input
+                <input
                   type="email"
                   id="email"
                   placeholder="Enter your email"
