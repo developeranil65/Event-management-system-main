@@ -3,6 +3,12 @@ import {
   Routes,
   Route,
   Navigate,
+  useLocation,
+} from "react-router-dom";
+import "./index.css";
+import Footer from "./components/mvpblocks/footer-standard";
+import Header2 from "./components/mvpblocks/header-2";
+import Home from "./pages/Home";
 } from "react-router-dom";
 
 import "./index.css";
@@ -21,12 +27,17 @@ import Support from "./pages/Support";
 import About from "./pages/About";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
+import ForgotPassword from "./pages/ForgotPassword";
+import NotFound from "./pages/NotFound";
+import Profile from "./pages/Profile";
+import DashboardLayout from "./components/DashboardLayout";
 import Profile from "./pages/Profile";
 import CustomerDashboard from "./pages/dashboard/CustomerDashboard";
 import OrganizerDashboard from "./pages/dashboard/OrganizerDashboard";
 import CreateEvent from "./pages/dashboard/CreateEvent";
 import AdminDashboard from "./pages/dashboard/AdminDashboard";
 import ThankYou from "./pages/ThankYou";
+import { useAuth } from "./context/AuthContext";
 
 import { useAuth } from "./context/AuthContext";
 
@@ -36,6 +47,7 @@ import ScrollToTop from "./components/ui/ScrollToTop";
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, loading } = useAuth();
 
+  if (loading)
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -113,7 +125,16 @@ const App = () => {
             <Route path="/about-us" element={<About />} />
             <Route path="/login" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/thank-you" element={<ThankYou />} />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Protected Profile Route */}
             <Route
@@ -175,6 +196,10 @@ const App = () => {
               }
             />
 
+            {/* Fallback to 404 */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </main>
             {/* Fallback Route */}
             <Route path="*" element={<Home />} />
           </Routes>
@@ -187,4 +212,5 @@ const App = () => {
   );
 };
 
+export default App;
 export default App;
