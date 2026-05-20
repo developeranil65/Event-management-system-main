@@ -1,3 +1,4 @@
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import './index.css'
 import Footer from "./components/mvpblocks/footer-standard";
@@ -17,6 +18,8 @@ import CreateEvent from './pages/dashboard/CreateEvent';
 import AdminDashboard from './pages/dashboard/AdminDashboard';
 import ThankYou from './pages/ThankYou';
 import { useAuth } from './context/AuthContext';
+
+const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Protected Route Component
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -109,7 +112,18 @@ const App = () => {
             />
 
             {/* Fallback to Home or 404 */}
-            <Route path="*" element={<Home />} />
+            <Route path="*" element={
+              <Suspense fallback={
+                <div className="min-h-screen flex items-center justify-center bg-background">
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="h-10 w-10 rounded-full border-4 border-primary border-t-transparent animate-spin" />
+                    <p className="text-sm text-muted-foreground">Loading...</p>
+                  </div>
+                </div>
+              }>
+                <NotFound />
+              </Suspense>
+            } />
           </Routes>
         </main>
         <Footer />
